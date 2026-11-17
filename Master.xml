@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite" thread-count="5">
+	<listeners>
+		 <listener class-name="utilities.ExtentReportManager" />  
+	</listeners>
+	<test name="Test">
+		<parameter name="os" value="Windows" />
+		<parameter name="browser" value="chrome" />
+		<classes>
+			<class name="testCases.AccountRegistrationTest"/>
+			<class name="testCases.LoginTest"/>
+			<class name="testCases.SearchTest"/>
+			<class name="testCases.ShoppingCartTest"/>
+			<class name="testCases.EndToEndCheckoutTest"/>
+			<class name="testCases.DDTTestcase"/>
+		</classes>
+	</test> <!--
+	Test -->
+</suite> <!--
+Suite -->

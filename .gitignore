@@ -1,0 +1,46 @@
+# Maven build output
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Test execution outputs and generated reports
+test-output/
+reports/*
+!reports/.gitkeep
+logs/*
+!logs/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
+
+# Temporary office and lock files
+~$*.xlsx
+~$*.xls
+
+# Log and crash files
+*.log
+*.gz
+hs_err_pid*
+replay_pid*
+
+# Eclipse metadata
+.classpath
+.project
+.settings/
+.apt_generated/
+.apt_generated_tests/
+
+# VS Code metadata
+.vscode/
+
+# IntelliJ IDEA metadata
+.idea/
+*.iml
+*.iws
+
+# OS-generated files
+Thumbs.db
+Desktop.ini
+.DS_Store
