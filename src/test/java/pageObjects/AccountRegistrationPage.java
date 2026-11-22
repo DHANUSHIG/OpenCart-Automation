@@ -8,59 +8,58 @@ public class AccountRegistrationPage extends BasePage {
 
 	public AccountRegistrationPage(WebDriver driver) {
 		super(driver);
-		// constructor invoking the driver and pagefactory form the base page
 	}
 
 	@FindBy(id = "input-firstname")
-	WebElement txtFirstname;
+	private WebElement txtFirstname;
 
 	@FindBy(id = "input-lastname")
-	WebElement txtLastname;
+	private WebElement txtLastname;
 
 	@FindBy(id = "input-email")
-	WebElement txtEmail;
+	private WebElement txtEmail;
 
 	@FindBy(id = "input-telephone")
-	WebElement txtTelephone;
+	private WebElement txtTelephone;
 
 	@FindBy(id = "input-password")
-	WebElement txtPassword;
+	private WebElement txtPassword;
 
 	@FindBy(id = "input-confirm")
-	WebElement txtConfirmPassword;
+	private WebElement txtConfirmPassword;
 
 	@FindBy(xpath = "//input[@name='newsletter' and @value='0'] | //input[@value='0']")
-	WebElement chkdSubscriber;
+	private WebElement chkdSubscriber;
 
 	@FindBy(xpath = "//input[@name='agree'] | //input[@type='checkbox']")
-	WebElement btnPrivacyPolicy;
+	private WebElement btnPrivacyPolicy;
 
 	@FindBy(xpath = "//input[@value='Continue' or @type='submit']")
-	WebElement btnContinue;
+	private WebElement btnContinue;
 
 	@FindBy(xpath = "//div//h1[normalize-space()='Your Account Has Been Created!']")
-	WebElement msgconfirmation;
+	private WebElement msgconfirmation;
 
 	@FindBy(css = "div.alert-danger")
-	WebElement alertWarning;
+	private WebElement alertWarning;
 
 	@FindBy(xpath = "//input[@id='input-firstname']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgFirstNameError;
+	private WebElement msgFirstNameError;
 
 	@FindBy(xpath = "//input[@id='input-lastname']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgLastNameError;
+	private WebElement msgLastNameError;
 
 	@FindBy(xpath = "//input[@id='input-email']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgEmailError;
+	private WebElement msgEmailError;
 
 	@FindBy(xpath = "//input[@id='input-telephone']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgTelephoneError;
+	private WebElement msgTelephoneError;
 
 	@FindBy(xpath = "//input[@id='input-password']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgPasswordError;
+	private WebElement msgPasswordError;
 
 	@FindBy(xpath = "//input[@id='input-confirm']/following-sibling::div[contains(@class,'text-danger')]")
-	WebElement msgConfirmPasswordError;
+	private WebElement msgConfirmPasswordError;
 
 	public void setFname(String fname) {
 		waitForVisibility(txtFirstname).sendKeys(fname);
@@ -94,11 +93,6 @@ public class AccountRegistrationPage extends BasePage {
 		waitForClickability(btnPrivacyPolicy).click();
 	}
 
-	// Backward-compatible alias
-	public void setPrivacyPoicy() {
-		setPrivacyPolicy();
-	}
-
 	public void clickContinue() {
 		waitForClickability(btnContinue).click();
 	}
@@ -107,8 +101,7 @@ public class AccountRegistrationPage extends BasePage {
 		try {
 			return (waitForVisibility(msgconfirmation).getText());
 		} catch (Exception e) {
-			return (e.getMessage());
-
+			return "";
 		}
 	}
 

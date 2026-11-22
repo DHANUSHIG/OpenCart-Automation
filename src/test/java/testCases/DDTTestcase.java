@@ -12,7 +12,7 @@ import utilities.DataProviders;
 public class DDTTestcase extends BaseClass {
 
 	@Test(dataProvider = "LoginData", dataProviderClass = DataProviders.class)
-	public void veriffy_loginDDT(String Email, String Password, String Result) {
+	public void verify_loginDDT(String Email, String Password, String Result) {
 
 		try {
 			logger.info("****Test Started***");

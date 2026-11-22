@@ -4,23 +4,23 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class LoginPage extends BasePage{
+public class LoginPage extends BasePage {
 
 	public LoginPage(WebDriver driver) {
 		super(driver);
 	}
 	
 	@FindBy(id = "input-email")
-	WebElement txtEmail;
+	private WebElement txtEmail;
 	
 	@FindBy(id = "input-password")
-	WebElement txtPassword;
+	private WebElement txtPassword;
 	
 	@FindBy(css = "input[value='Login'], input.btn.btn-primary")
-	WebElement btnLogin;
+	private WebElement btnLogin;
 
 	@FindBy(css = "div.alert-danger")
-	WebElement alertWarning;
+	private WebElement alertWarning;
 	
 	public void setEmail(String email) {
 		waitForVisibility(txtEmail).clear();
@@ -42,18 +42,5 @@ public class LoginPage extends BasePage{
 		} catch (Exception e) {
 			return "";
 		}
-	}
-
-	// Backward-compatible aliases
-	public void Email(String email) {
-		setEmail(email);
-	}
-	
-	public void Password(String password) {
-		setPassword(password);
-	}
-
-	public void ClickLoginBtn() {
-		clickLogin();
 	}
 }

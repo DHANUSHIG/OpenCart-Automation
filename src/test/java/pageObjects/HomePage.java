@@ -8,20 +8,19 @@ public class HomePage extends BasePage {
 
 	public HomePage(WebDriver driver) {
 		super(driver);
-		// constructor invoking the driver and pagefactory form the base page
 	}
 
 	@FindBy(xpath = "//a[@title=\"My Account\"]")
-	WebElement lnkMyaccount;
+	private WebElement lnkMyaccount;
 
 	@FindBy(xpath = "//a[normalize-space()='Register']")
-	WebElement lnkRegister;
+	private WebElement lnkRegister;
 
 	@FindBy(xpath = "//li//a[normalize-space()='Login']")
-	WebElement lnkLogin;
+	private WebElement lnkLogin;
 	
 	@FindBy(xpath = "//div[@class='list-group']//a[text()='Logout']")
-	WebElement lnkLogout;
+	private WebElement lnkLogout;
 
 	public void clickMyAccount() {
 		waitForClickability(lnkMyaccount).click();
@@ -37,10 +36,5 @@ public class HomePage extends BasePage {
 	
 	public void clickLogout() {
 		waitForClickability(lnkLogout).click();
-	}
-
-	// Backward-compatible alias
-	public void clcikLogout() {
-		clickLogout();
 	}
 }

@@ -24,7 +24,6 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -34,31 +33,30 @@ import pageObjects.HomePage;
 import pageObjects.LoginPage;
 import pageObjects.MyAccountPage;
 
-/*
- * BaseClass is the parent class for all test classes.
- * It handles:
- * 1) Browser setup
- * 2) Reading configuration file
- * 3) Common utility methods
- * 4) Screenshot capturing
- * 5) Closing browser
+/**
+ * BaseClass is the abstract parent class for all Test classes.
+ * It manages:
+ * 1) ThreadLocal WebDriver setup for parallel cross-browser execution
+ * 2) Centralized configuration management
+ * 3) Common test data generation methods
+ * 4) Failure screenshot capture
+ * 5) Clean browser teardown and session isolation
  */
-
-public class BaseClass {
+public abstract class BaseClass {
 
 	// ThreadLocal WebDriver object for parallel thread-safety
 	private static ThreadLocal<WebDriver> tdriver = new ThreadLocal<>();
 
-	// Instance WebDriver object (accessible directly by test subclasses)
-	public WebDriver driver;
+	// Instance WebDriver object (accessible by test subclasses)
+	protected WebDriver driver;
 
 	// Logger object (used to print logs in console/report)
-	public Logger logger;
+	protected Logger logger;
 
 	// Properties object (used to read config.properties file)
-	public static Properties p;
+	protected static Properties p;
 
-	/*
+	/**
 	 * Returns thread-safe WebDriver instance
 	 */
 	public static WebDriver getDriver() {
@@ -67,7 +65,7 @@ public class BaseClass {
 
 	// =================== BROWSER SETUP ===================
 
-	/*
+	/**
 	 * @BeforeClass runs before any test method in that class. Parameters come from
 	 * testng.xml file.
 	 */
@@ -75,10 +73,11 @@ public class BaseClass {
 	@Parameters({ "os", "browser" })
 	public void setup(@org.testng.annotations.Optional("Windows") String os, @org.testng.annotations.Optional("chrome") String br) throws IOException {
 
-		// Load config.properties file
-		FileReader file = new FileReader("./src//test//resources//config.properties");
-		p = new Properties();
-		p.load(file);
+		// Load config.properties file using try-with-resources to prevent resource leaks
+		try (FileReader file = new FileReader("./src/test/resources/config.properties")) {
+			p = new Properties();
+			p.load(file);
+		}
 
 		// Check for headless mode flag (from system property e.g. -Dheadless=true, or config.properties)
 		boolean isHeadless = Boolean.parseBoolean(System.getProperty("headless", p.getProperty("headless", "false")));
@@ -86,7 +85,7 @@ public class BaseClass {
 		WebDriver localDriver = null;
 
 		if (p.getProperty("Execution_env").equalsIgnoreCase("remote")) {
-			String gridUrl = p.getProperty("gridURL", "http://192.168.0.100:4444/wd/hub");
+			String gridUrl = p.getProperty("gridURL", "http://localhost:4444/wd/hub");
 			Platform platform;
 			if (os.equalsIgnoreCase("Windows")) {
 				platform = Platform.WIN11;
@@ -180,28 +179,28 @@ public class BaseClass {
 
 	// =================== RANDOM DATA METHODS ===================
 
-	/*
+	/**
 	 * Generates random alphabet string (used for email, name etc.)
 	 */
 	public String randomString() {
 		return RandomStringUtils.randomAlphabetic(6);
 	}
 
-	/*
+	/**
 	 * Generates a unique collision-free email address with timestamp
 	 */
 	public String randomEmail() {
 		return "user_" + RandomStringUtils.randomAlphabetic(5).toLowerCase() + System.currentTimeMillis() + "@test.com";
 	}
 
-	/*
+	/**
 	 * Generates random numeric string
 	 */
 	public String randomNumber() {
 		return RandomStringUtils.randomNumeric(10);
 	}
 
-	/*
+	/**
 	 * Generates random alphanumeric string
 	 */
 	public String randomAlphaNumeric() {
@@ -239,7 +238,7 @@ public class BaseClass {
 
 	// =================== SESSION TEARDOWN ===================
 
-	/*
+	/**
 	 * @AfterMethod ensures each test method starts with a clean session by clearing all browser cookies.
 	 */
 	@org.testng.annotations.AfterMethod
@@ -258,7 +257,7 @@ public class BaseClass {
 
 	// =================== BROWSER CLOSE ===================
 
-	/*
+	/**
 	 * @AfterClass runs after all test methods complete. It closes the browser
 	 * completely and removes thread-local instance.
 	 */
@@ -272,14 +271,13 @@ public class BaseClass {
 
 	// =================== SCREENSHOT METHOD ===================
 
-	/*
+	/**
 	 * This method captures screenshot when test fails. It is called from
 	 * ExtentReportManager.
 	 *
 	 * Steps: 1) Generate unique name using timestamp 2) Take screenshot 3) Store
 	 * inside "screenshots" folder 4) Return relative path (used in Extent report)
 	 */
-
 	public String captureScreen(String tname) throws IOException {
 
 		// Create timestamp (to avoid file name duplication)

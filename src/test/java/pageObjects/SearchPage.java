@@ -12,26 +12,27 @@ public class SearchPage extends BasePage {
 	public SearchPage(WebDriver driver) {
 		super(driver);
 	}
-	@FindBy(xpath="//input[@name='search']")
-	WebElement txtSearchBox;
+
+	@FindBy(xpath = "//input[@name='search']")
+	private WebElement txtSearchBox;
 	
-	@FindBy(xpath="//span[@class='input-group-btn']/button")
-	WebElement btnSearch;
+	@FindBy(xpath = "//span[@class='input-group-btn']/button")
+	private WebElement btnSearch;
 	
-	@FindBy(xpath="//ul[@class='nav navbar-nav']//a[contains(text(),'Phones & PDAs')]")
-	WebElement navPhonesAndPdas;
+	@FindBy(xpath = "//ul[@class='nav navbar-nav']//a[contains(text(),'Phones & PDAs')]")
+	private WebElement navPhonesAndPdas;
 	
-	@FindBy(xpath="//select[@id='input-sort']")
-	WebElement drpSortBy;
+	@FindBy(xpath = "//select[@id='input-sort']")
+	private WebElement drpSortBy;
 	
-	@FindBy(xpath="//button[contains(@onclick,\"cart.add('28'\")] | //div[contains(@class,'product-layout')][1]//button[contains(@onclick,'cart.add')]")
-	WebElement btnAddCart;
+	@FindBy(xpath = "//button[contains(@onclick,\"cart.add('28'\")] | //div[contains(@class,'product-layout')][1]//button[contains(@onclick,'cart.add')]")
+	private WebElement btnAddCart;
 	
 	@FindBy(css = "div.alert.alert-success")
-	WebElement alertSuccessMsg;
+	private WebElement alertSuccessMsg;
 
 	@FindBy(xpath = "//div[@id='content']//p[contains(text(),'There is no product that matches the search criteria.')]")
-	WebElement msgNoProductFound;
+	private WebElement msgNoProductFound;
 	
 	public void search(String productName) {
 		waitForVisibility(txtSearchBox).clear();
@@ -98,31 +99,6 @@ public class SearchPage extends BasePage {
 		} catch (Exception e) {
 			return "";
 		}
-	}
-
-	// Backward-compatible aliases
-	public void Search(String txtSearch) {
-		search(txtSearch);
-	}
-	
-	public void ClickBtn() {
-		clickSearchBtn();
-	}
-	
-	public void SelectNavbar() {
-		selectNavbar();
-	}
-	
-	public void SelectSortBy() {
-		selectSortBy("Name (Z - A)");
-	}
-	
-	public void BntAddcart() {
-		clickAddToCart();
-	}
-	
-	public String AddcartSuccessMsg() {
-		return getAddToCartSuccessMsg();
 	}
 
 }

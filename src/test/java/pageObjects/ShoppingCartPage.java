@@ -1,10 +1,14 @@
 package pageObjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 /**
  * Page Object representing the OpenCart Shopping Cart page (index.php?route=checkout/cart).
@@ -16,52 +20,52 @@ public class ShoppingCartPage extends BasePage {
 	}
 
 	@FindBy(xpath = "//input[contains(@name,'quantity')]")
-	WebElement txtQuantity;
+	private WebElement txtQuantity;
 
 	@FindBy(xpath = "//div[@id='content']//form//button[@data-original-title='Update' or contains(@onclick,'cart.update')]")
-	WebElement btnUpdate;
+	private WebElement btnUpdate;
 
 	@FindBy(xpath = "//div[@id='content']//form//button[@data-original-title='Remove' or contains(@class,'btn-danger')]")
-	WebElement btnRemove;
+	private WebElement btnRemove;
 
 	@FindBy(xpath = "//div[@id='content']//p[contains(text(),'Your shopping cart is empty!')]")
-	WebElement msgEmptyCart;
+	private WebElement msgEmptyCart;
 
 	@FindBy(css = "a[href='#collapse-shipping']")
-	WebElement lnkEstimateShipping;
+	private WebElement lnkEstimateShipping;
 
 	@FindBy(id = "input-country")
-	WebElement drpCountry;
+	private WebElement drpCountry;
 
 	@FindBy(id = "input-zone")
-	WebElement drpState;
+	private WebElement drpState;
 
 	@FindBy(id = "input-postcode")
-	WebElement txtPostcode;
+	private WebElement txtPostcode;
 
 	@FindBy(id = "button-quote")
-	WebElement btnGetQuotes;
+	private WebElement btnGetQuotes;
 
 	@FindBy(xpath = "//a[contains(@class,'btn-primary') and contains(@href,'checkout/checkout')]")
-	WebElement btnCheckout;
+	private WebElement btnCheckout;
 
 	@FindBy(css = "div.alert.alert-success")
-	WebElement alertSuccessMsg;
+	private WebElement alertSuccessMsg;
 
 	@FindBy(xpath = "//div[@class='table-responsive']//tbody/tr[1]/td[5]")
-	WebElement txtProductUnitPrice;
+	private WebElement txtProductUnitPrice;
 
 	@FindBy(xpath = "//div[@class='table-responsive']//tbody/tr[1]/td[6]")
-	WebElement txtProductLineTotal;
+	private WebElement txtProductLineTotal;
 
 	@FindBy(xpath = "//div[@id='content']//div[contains(@class,'row')]//table[contains(@class,'table-bordered')]//tr[td[contains(.,'Sub-Total')]]/td[last()]")
-	WebElement txtSubTotal;
+	private WebElement txtSubTotal;
 
 	@FindBy(xpath = "//div[@id='content']//div[contains(@class,'row')]//table[contains(@class,'table-bordered')]//tr[last()]/td[last()]")
-	WebElement txtGrandTotal;
+	private WebElement txtGrandTotal;
 
 	@FindBy(xpath = "//div[@class='table-responsive']//tbody/tr[1]/td[2]/a")
-	WebElement txtProductName;
+	private WebElement txtProductName;
 
 	public void setQuantity(String qty) {
 		WebElement qtyField = waitForVisibility(txtQuantity);
@@ -74,7 +78,7 @@ public class ShoppingCartPage extends BasePage {
 	}
 
 	public void clickRemove() {
-		org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+		JavascriptExecutor js = (JavascriptExecutor) driver;
 		waitForVisibility(btnRemove);
 		js.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btnRemove);
 		waitForClickability(btnRemove).click();
@@ -149,8 +153,8 @@ public class ShoppingCartPage extends BasePage {
 	}
 
 	public int waitForCartItemCount(int expectedCount) {
-		new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10))
-				.until(org.openqa.selenium.support.ui.ExpectedConditions.numberOfElementsToBe(
+		new WebDriverWait(driver, Duration.ofSeconds(10))
+				.until(ExpectedConditions.numberOfElementsToBe(
 						By.xpath("//div[@class='table-responsive']//tbody/tr"), expectedCount));
 		return getCartItemCount();
 	}
@@ -198,7 +202,7 @@ public class ShoppingCartPage extends BasePage {
 	public void clickRemove(int rowIndex) {
 		By locator = By.xpath("//div[@class='table-responsive']//tbody/tr[" + rowIndex + "]//button[contains(@class,'btn-danger')]");
 		WebElement btn = waitForVisibility(locator);
-		((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn);
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn);
 		waitForClickability(btn).click();
 	}
 

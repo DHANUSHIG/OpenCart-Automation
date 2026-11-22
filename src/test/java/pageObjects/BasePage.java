@@ -9,10 +9,15 @@ import org.openqa.selenium.support.PageFactory;
 
 import utilities.WaitUtils;
 
-public class BasePage {
+/**
+ * BasePage is the abstract parent class for all Page Objects in the framework.
+ * It encapsulates the WebDriver instance, initializes PageFactory WebElements,
+ * and delegates explicit wait operations to WaitUtils.
+ */
+public abstract class BasePage {
 
-	public WebDriver driver;
-	public WaitUtils waitUtils;
+	protected WebDriver driver;
+	protected WaitUtils waitUtils;
 
 	// Constructor initializing the driver, wait utility, and page factory elements
 	public BasePage(WebDriver driver) {

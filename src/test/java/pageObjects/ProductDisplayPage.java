@@ -1,5 +1,6 @@
 package pageObjects;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -14,22 +15,22 @@ public class ProductDisplayPage extends BasePage {
 	}
 
 	@FindBy(xpath = "//div[@id='content']//h1")
-	WebElement txtProductTitle;
+	private WebElement txtProductTitle;
 
 	@FindBy(id = "input-quantity")
-	WebElement txtQuantity;
+	private WebElement txtQuantity;
 
 	@FindBy(id = "button-cart")
-	WebElement btnAddToCart;
+	private WebElement btnAddToCart;
 
 	@FindBy(css = "div.alert.alert-success")
-	WebElement alertSuccessMessage;
+	private WebElement alertSuccessMessage;
 
 	@FindBy(xpath = "//button[@data-original-title='Add to Wish List' or contains(@onclick,'wishlist.add')]")
-	WebElement btnAddToWishList;
+	private WebElement btnAddToWishList;
 
 	@FindBy(xpath = "//button[@data-original-title='Compare this Product' or contains(@onclick,'compare.add')]")
-	WebElement btnCompareProduct;
+	private WebElement btnCompareProduct;
 
 	public String getProductTitle() {
 		return waitForVisibility(txtProductTitle).getText();
@@ -42,7 +43,7 @@ public class ProductDisplayPage extends BasePage {
 	}
 
 	public void clickAddToCart() {
-		org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+		JavascriptExecutor js = (JavascriptExecutor) driver;
 		waitForVisibility(btnAddToCart);
 		js.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btnAddToCart);
 		waitForClickability(btnAddToCart).click();

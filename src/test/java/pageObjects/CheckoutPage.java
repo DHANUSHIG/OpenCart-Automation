@@ -1,9 +1,13 @@
 package pageObjects;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 /**
  * Page Object representing the OpenCart 6-Step Checkout process (index.php?route=checkout/checkout).
@@ -16,81 +20,81 @@ public class CheckoutPage extends BasePage {
 
 	// ================= Step 1: Checkout Options =================
 	@FindBy(xpath = "//input[@value='guest']")
-	WebElement rdoGuestCheckout;
+	private WebElement rdoGuestCheckout;
 
 	@FindBy(xpath = "//input[@value='register']")
-	WebElement rdoRegisterAccount;
+	private WebElement rdoRegisterAccount;
 
 	@FindBy(id = "button-account")
-	WebElement btnStep1Continue;
+	private WebElement btnStep1Continue;
 
 	// ================= Step 2: Billing / Guest Details =================
 	@FindBy(id = "input-payment-firstname")
-	WebElement txtBillingFirstName;
+	private WebElement txtBillingFirstName;
 
 	@FindBy(id = "input-payment-lastname")
-	WebElement txtBillingLastName;
+	private WebElement txtBillingLastName;
 
 	@FindBy(id = "input-payment-email")
-	WebElement txtBillingEmail;
+	private WebElement txtBillingEmail;
 
 	@FindBy(id = "input-payment-telephone")
-	WebElement txtBillingTelephone;
+	private WebElement txtBillingTelephone;
 
 	@FindBy(id = "input-payment-address-1")
-	WebElement txtBillingAddress1;
+	private WebElement txtBillingAddress1;
 
 	@FindBy(id = "input-payment-city")
-	WebElement txtBillingCity;
+	private WebElement txtBillingCity;
 
 	@FindBy(id = "input-payment-postcode")
-	WebElement txtBillingPostcode;
+	private WebElement txtBillingPostcode;
 
 	@FindBy(id = "input-payment-country")
-	WebElement drpBillingCountry;
+	private WebElement drpBillingCountry;
 
 	@FindBy(id = "input-payment-zone")
-	WebElement drpBillingZone;
+	private WebElement drpBillingZone;
 
 	@FindBy(id = "button-guest")
-	WebElement btnStep2GuestContinue;
+	private WebElement btnStep2GuestContinue;
 
 	@FindBy(id = "button-payment-address")
-	WebElement btnStep2RegisteredContinue;
+	private WebElement btnStep2RegisteredContinue;
 
 	// ================= Step 4: Delivery Method =================
 	@FindBy(id = "button-shipping-method")
-	WebElement btnStep4ShippingMethodContinue;
+	private WebElement btnStep4ShippingMethodContinue;
 
 	// ================= Step 5: Payment Method =================
 	@FindBy(xpath = "//input[@name='agree']")
-	WebElement chkTermsAndConditions;
+	private WebElement chkTermsAndConditions;
 
 	@FindBy(id = "button-payment-method")
-	WebElement btnStep5PaymentMethodContinue;
+	private WebElement btnStep5PaymentMethodContinue;
 
 	// ================= Step 6: Confirm Order =================
 	@FindBy(id = "button-confirm")
-	WebElement btnConfirmOrder;
+	private WebElement btnConfirmOrder;
 
 	@FindBy(xpath = "//div[@id='collapse-checkout-confirm']//tbody//tr[1]/td[1]//a")
-	WebElement txtConfirmProductName;
+	private WebElement txtConfirmProductName;
 
 	@FindBy(xpath = "//div[@id='collapse-checkout-confirm']//tbody//tr[1]/td[3]")
-	WebElement txtConfirmProductQuantity;
+	private WebElement txtConfirmProductQuantity;
 
 	@FindBy(xpath = "//div[@id='collapse-checkout-confirm']//tbody//tr[1]/td[5]")
-	WebElement txtConfirmProductTotal;
+	private WebElement txtConfirmProductTotal;
 
 	@FindBy(xpath = "//div[@id='collapse-checkout-confirm']//tfoot//tr[td[contains(.,'Flat Shipping')]]/td[last()]")
-	WebElement txtConfirmShippingRate;
+	private WebElement txtConfirmShippingRate;
 
 	@FindBy(xpath = "//div[@id='collapse-checkout-confirm']//tfoot//tr[last()]/td[last()]")
-	WebElement txtConfirmGrandTotal;
+	private WebElement txtConfirmGrandTotal;
 
 	// ================= Order Placed Confirmation =================
 	@FindBy(xpath = "//div[@id='content']//h1[text()='Your order has been placed!']")
-	WebElement msgOrderPlaced;
+	private WebElement msgOrderPlaced;
 
 	// ================= Action Methods =================
 
@@ -116,8 +120,8 @@ public class CheckoutPage extends BasePage {
 		countrySelect.selectByVisibleText(country);
 
 		// Wait for AJAX dynamic state options to populate
-		new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10))
-				.until(org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement(drpBillingZone, state));
+		new WebDriverWait(driver, Duration.ofSeconds(10))
+				.until(ExpectedConditions.textToBePresentInElement(drpBillingZone, state));
 		Select zoneSelect = new Select(waitForVisibility(drpBillingZone));
 		zoneSelect.selectByVisibleText(state);
 	}
@@ -179,7 +183,7 @@ public class CheckoutPage extends BasePage {
 	}
 
 	public void clickConfirmOrder() {
-		org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+		JavascriptExecutor js = (JavascriptExecutor) driver;
 		WebElement btn = waitForClickability(btnConfirmOrder);
 		js.executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
 		js.executeScript("arguments[0].click();", btn);
@@ -187,7 +191,7 @@ public class CheckoutPage extends BasePage {
 
 	public boolean isOrderPlaced() {
 		try {
-			return waitForVisibility(msgOrderPlaced, java.time.Duration.ofSeconds(15)).isDisplayed();
+			return waitForVisibility(msgOrderPlaced, Duration.ofSeconds(15)).isDisplayed();
 		} catch (Exception e) {
 			return false;
 		}

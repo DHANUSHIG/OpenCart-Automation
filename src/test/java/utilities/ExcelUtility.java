@@ -14,222 +14,141 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-/*
- * ExcelUtility class is used for:
- * 1) Reading data from Excel file
- * 2) Writing data into Excel file
- * 3) Applying color formatting (for PASS/FAIL)
- *
- * This is commonly used in Data Driven Testing (DDT).
+/**
+ * ExcelUtility encapsulates Apache POI workbook and sheet operations for Data-Driven Testing (DDT).
+ * All stream resources are closed safely using try-with-resources to prevent file leaks.
  */
-
 public class ExcelUtility {
 
-    // Input & Output streams
-    public FileInputStream fi;
-    public FileOutputStream fo;
+    private String path;
 
-    // Workbook = entire Excel file
-    public XSSFWorkbook workbook;
-
-    // Sheet = one tab inside Excel
-    public XSSFSheet sheet;
-
-    // Row & Cell objects
-    public XSSFRow row;
-    public XSSFCell cell;
-
-    // Used for coloring cells
-    public CellStyle style;
-
-    // File path of Excel
-    String path;
-
-    /*
-     * Constructor
-     * When creating object, we pass Excel file path.
-     */
     public ExcelUtility(String path) {
         this.path = path;
     }
 
     // ================== GET TOTAL ROW COUNT ==================
 
-    /*
-     * Returns last row number in given sheet.
-     * Used to loop through test data.
-     */
     public int getRowCount(String sheetName) throws IOException {
-
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
-        sheet = workbook.getSheet(sheetName);
-
-        int rowcount = sheet.getLastRowNum();
-
-        workbook.close();
-        fi.close();
-
-        return rowcount;
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            return (sheet != null) ? sheet.getLastRowNum() : 0;
+        }
     }
 
     // ================== GET TOTAL CELL COUNT ==================
 
-    /*
-     * Returns number of cells in a particular row.
-     * Used when reading column-wise data.
-     */
     public int getCellCount(String sheetName, int rownum) throws IOException {
-
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
-        sheet = workbook.getSheet(sheetName);
-
-        row = sheet.getRow(rownum);
-        int cellcount = row.getLastCellNum();
-
-        workbook.close();
-        fi.close();
-
-        return cellcount;
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            if (sheet == null) return 0;
+            XSSFRow row = sheet.getRow(rownum);
+            return (row != null) ? row.getLastCellNum() : 0;
+        }
     }
 
     // ================== READ CELL DATA ==================
 
-    /*
-     * Returns data from specific cell.
-     * DataFormatter ensures all cell types (string, number, date)
-     * are converted safely into String.
-     */
     public String getCellData(String sheetName, int rownum, int colnum) throws IOException {
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            if (sheet == null) return "";
+            XSSFRow row = sheet.getRow(rownum);
+            if (row == null) return "";
+            XSSFCell cell = row.getCell(colnum);
+            if (cell == null) return "";
 
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
-        sheet = workbook.getSheet(sheetName);
-
-        row = sheet.getRow(rownum);
-        cell = row.getCell(colnum);
-
-        DataFormatter formatter = new DataFormatter();
-        String data;
-
-        try {
-            data = formatter.formatCellValue(cell);
-        } catch (Exception e) {
-            data = "";
+            DataFormatter formatter = new DataFormatter();
+            try {
+                return formatter.formatCellValue(cell);
+            } catch (Exception e) {
+                return "";
+            }
         }
-
-        workbook.close();
-        fi.close();
-
-        return data;
     }
 
     // ================== WRITE CELL DATA ==================
 
-    /*
-     * Writes data into specific cell.
-     * If file/sheet/row does not exist,
-     * it creates them dynamically.
-     */
     public void setCellData(String sheetName, int rownum, int colnum, String data) throws IOException {
-
         File xlfile = new File(path);
 
-        // If file does not exist → create new workbook
+        // If file does not exist, create new empty workbook
         if (!xlfile.exists()) {
-            workbook = new XSSFWorkbook();
-            fo = new FileOutputStream(path);
-            workbook.write(fo);
-            fo.close();
-            workbook.close();
+            try (XSSFWorkbook newWb = new XSSFWorkbook();
+                 FileOutputStream fo = new FileOutputStream(path)) {
+                newWb.write(fo);
+            }
         }
 
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            if (sheet == null) {
+                sheet = workbook.createSheet(sheetName);
+            }
 
-        // If sheet not present → create sheet
-        if (workbook.getSheetIndex(sheetName) == -1)
-            workbook.createSheet(sheetName);
+            XSSFRow row = sheet.getRow(rownum);
+            if (row == null) {
+                row = sheet.createRow(rownum);
+            }
 
-        sheet = workbook.getSheet(sheetName);
+            XSSFCell cell = row.createCell(colnum);
+            cell.setCellValue(data);
 
-        // If row not present → create row
-        if (sheet.getRow(rownum) == null)
-            sheet.createRow(rownum);
-
-        row = sheet.getRow(rownum);
-
-        // Create cell and set value
-        cell = row.createCell(colnum);
-        cell.setCellValue(data);
-
-        // Write updated data into file
-        fo = new FileOutputStream(path);
-        workbook.write(fo);
-
-        workbook.close();
-        fi.close();
-        fo.close();
+            try (FileOutputStream fo = new FileOutputStream(path)) {
+                workbook.write(fo);
+            }
+        }
     }
 
     // ================== FILL GREEN COLOR ==================
 
-    /*
-     * Used to highlight cell in GREEN color.
-     * Typically used for marking test PASS.
-     */
     public void fillGreenColor(String sheetName, int rownum, int colnum) throws IOException {
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            if (sheet == null) return;
+            XSSFRow row = sheet.getRow(rownum);
+            if (row == null) return;
+            XSSFCell cell = row.getCell(colnum);
+            if (cell == null) return;
 
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
-        sheet = workbook.getSheet(sheetName);
+            CellStyle style = workbook.createCellStyle();
+            style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            cell.setCellStyle(style);
 
-        row = sheet.getRow(rownum);
-        cell = row.getCell(colnum);
-
-        style = workbook.createCellStyle();
-
-        style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        cell.setCellStyle(style);
-
-        fo = new FileOutputStream(path);
-        workbook.write(fo);
-
-        workbook.close();
-        fi.close();
-        fo.close();
+            try (FileOutputStream fo = new FileOutputStream(path)) {
+                workbook.write(fo);
+            }
+        }
     }
 
     // ================== FILL RED COLOR ==================
 
-    /*
-     * Used to highlight cell in RED color.
-     * Typically used for marking test FAIL.
-     */
     public void fillRedColor(String sheetName, int rownum, int colnum) throws IOException {
+        try (FileInputStream fi = new FileInputStream(path);
+             XSSFWorkbook workbook = new XSSFWorkbook(fi)) {
+            
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            if (sheet == null) return;
+            XSSFRow row = sheet.getRow(rownum);
+            if (row == null) return;
+            XSSFCell cell = row.getCell(colnum);
+            if (cell == null) return;
 
-        fi = new FileInputStream(path);
-        workbook = new XSSFWorkbook(fi);
-        sheet = workbook.getSheet(sheetName);
+            CellStyle style = workbook.createCellStyle();
+            style.setFillForegroundColor(IndexedColors.RED.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            cell.setCellStyle(style);
 
-        row = sheet.getRow(rownum);
-        cell = row.getCell(colnum);
-
-        style = workbook.createCellStyle();
-
-        style.setFillForegroundColor(IndexedColors.RED.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        cell.setCellStyle(style);
-
-        fo = new FileOutputStream(path);
-        workbook.write(fo);
-
-        workbook.close();
-        fi.close();
-        fo.close();
+            try (FileOutputStream fo = new FileOutputStream(path)) {
+                workbook.write(fo);
+            }
+        }
     }
 }

@@ -11,10 +11,9 @@ public class MyAccountPage extends BasePage {
 	}
 
 	@FindBy(xpath = "//h2[normalize-space()='My Account']")
-	WebElement msgMyaccount;
+	private WebElement msgMyaccount;
 
 	public boolean isMyaccountDisplayed() {
-
 		try {
 			return (waitForVisibility(msgMyaccount).isDisplayed());
 		} catch (Exception e) {

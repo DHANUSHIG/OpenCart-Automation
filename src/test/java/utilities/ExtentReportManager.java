@@ -96,36 +96,42 @@ public class ExtentReportManager implements ITestListener {
 
     /*
      * If test method executes successfully,
-     * this method logs PASS status.
+     * this method logs PASS status and cleans up the thread-local instance.
      */
     @Override
     public void onTestSuccess(ITestResult result) {
-        extentTest.get().log(Status.PASS, "Test Passed");
+        if (extentTest.get() != null) {
+            extentTest.get().log(Status.PASS, "Test Passed");
+            extentTest.remove();
+        }
     }
 
     // =================== WHEN TEST FAILS ===================
 
     /*
      * If test method fails,
-     * this method logs failure and attaches screenshot.
+     * this method logs failure, attaches screenshot, and cleans up the thread-local instance.
      */
     @Override
     public void onTestFailure(ITestResult result) {
+        if (extentTest.get() != null) {
+            extentTest.get().log(Status.FAIL, "Test Failed");
 
-        extentTest.get().log(Status.FAIL, "Test Failed");
+            // Log actual exception message
+            extentTest.get().log(Status.INFO, result.getThrowable());
 
-        // Log actual exception message
-        extentTest.get().log(Status.INFO, result.getThrowable());
+            try {
+                // Capture screenshot from BaseClass
+                String imgPath = ((BaseClass) result.getInstance()).captureScreen(result.getName());
 
-        try {
-            // Capture screenshot from BaseClass
-            String imgPath = ((BaseClass) result.getInstance()).captureScreen(result.getName());
+                // Attach screenshot to report
+                extentTest.get().addScreenCaptureFromPath(imgPath);
 
-            // Attach screenshot to report
-            extentTest.get().addScreenCaptureFromPath(imgPath);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                extentTest.remove();
+            }
         }
     }
 
@@ -133,12 +139,15 @@ public class ExtentReportManager implements ITestListener {
 
     /*
      * If test is skipped (dependsOnMethods failure etc.),
-     * mark it as SKIP in report.
+     * mark it as SKIP in report and cleans up the thread-local instance.
      */
     @Override
     public void onTestSkipped(ITestResult result) {
-        extentTest.get().log(Status.SKIP, "Test Skipped");
-        extentTest.get().log(Status.INFO, result.getThrowable());
+        if (extentTest.get() != null) {
+            extentTest.get().log(Status.SKIP, "Test Skipped");
+            extentTest.get().log(Status.INFO, result.getThrowable());
+            extentTest.remove();
+        }
     }
 
     // =================== WHEN TEST SUITE FINISHES ===================
