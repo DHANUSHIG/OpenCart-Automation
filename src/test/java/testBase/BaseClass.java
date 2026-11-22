@@ -311,4 +311,15 @@ public abstract class BaseClass {
 		// Return relative path (used inside Extent Report)
 		return "../screenshots/" + fileName;
 	}
+
+	/**
+	 * Captures screenshot as Base64 string for direct inline embedding into ExtentReports.
+	 * This makes the generated HTML reports completely self-contained and portable across
+	 * CI artifacts, email, and different environments without missing image files.
+	 */
+	public String captureScreenBase64() {
+		WebDriver currentDriver = getDriver() != null ? getDriver() : this.driver;
+		TakesScreenshot ts = (TakesScreenshot) currentDriver;
+		return ts.getScreenshotAs(OutputType.BASE64);
+	}
 }

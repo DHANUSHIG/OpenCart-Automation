@@ -1,5 +1,6 @@
 package pageObjects;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -135,15 +136,18 @@ public class CheckoutPage extends BasePage {
 	}
 
 	public void clickStep4ShippingMethodContinue() {
+		waitForVisibility(By.id("collapse-shipping-method"));
 		waitForClickability(btnStep4ShippingMethodContinue).click();
 	}
 
 	public void checkTermsAndConditions() {
+		waitForVisibility(By.id("collapse-payment-method"));
 		waitForClickability(chkTermsAndConditions).click();
 	}
 
 	public void clickStep5PaymentMethodContinue() {
 		waitForClickability(btnStep5PaymentMethodContinue).click();
+		waitForVisibility(By.id("collapse-checkout-confirm"));
 	}
 
 	public String getConfirmProductName() {

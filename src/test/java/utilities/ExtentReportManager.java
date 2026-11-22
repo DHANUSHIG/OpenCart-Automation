@@ -121,13 +121,16 @@ public class ExtentReportManager implements ITestListener {
             extentTest.get().log(Status.INFO, result.getThrowable());
 
             try {
-                // Capture screenshot from BaseClass
-                String imgPath = ((BaseClass) result.getInstance()).captureScreen(result.getName());
+                BaseClass baseClass = (BaseClass) result.getInstance();
 
-                // Attach screenshot to report
-                extentTest.get().addScreenCaptureFromPath(imgPath);
+                // 1. Capture and save physical PNG file to screenshots/ folder (for local storage/debugging)
+                baseClass.captureScreen(result.getName());
 
-            } catch (IOException e) {
+                // 2. Embed screenshot as Base64 directly into HTML report (guarantees image renders anywhere)
+                String base64Image = baseClass.captureScreenBase64();
+                extentTest.get().addScreenCaptureFromBase64String(base64Image, result.getName());
+
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 extentTest.remove();
