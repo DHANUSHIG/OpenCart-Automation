@@ -30,7 +30,7 @@ public class EndToEndCheckoutTest extends BaseClass {
 			Assert.assertTrue(sp.isProductDisplayed("HP LP3065"), "Product HP LP3065 not found in search results!");
 
 			// Step 2: Navigate to Product Details and Add In-Stock Product to Cart
-			sp.selectProduct("null");
+			sp.selectProduct("HP LP3065");
 			ProductDisplayPage pdp = new ProductDisplayPage(driver);
 			pdp.clickAddToCart();
 			String successMsg = pdp.getSuccessAlertText();
